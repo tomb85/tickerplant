@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.is;
 public class AcceptanceTest {
 
     @Test
-    public void testCountWithFlag() throws Exception {
+    public void shouldCountTradesForInstrumentWithFlag() throws Exception {
         Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
         FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
 
@@ -36,13 +36,13 @@ public class AcceptanceTest {
         Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
         FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
 
-        Processor<Double> processor = new Processor<>("VOD LN", Runnable::run, Filter.any(), Accumulator.avgSize());
+        Processor<Double> processor = new Processor<>("AAA AC", Runnable::run, Filter.any(), Accumulator.avgSize());
 
         feedHandler.subscribe(processor);
 
         feedHandler.start();
 
-        Assert.assertThat(processor.getValue(), is(equalTo(200.5)));
+        Assert.assertEquals(206.102564102564, processor.getValue(), 0.0000_0000_0001);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class AcceptanceTest {
         Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
         FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
 
-        Processor<Double> processor = new Processor<>("VOD LN", Runnable::run, Filter.any(), Accumulator.avgPrice());
+        Processor<Double> processor = new Processor<>("AAA AC", Runnable::run, Filter.any(), Accumulator.avgPrice());
 
         feedHandler.subscribe(processor);
 
