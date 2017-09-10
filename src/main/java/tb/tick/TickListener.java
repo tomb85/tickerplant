@@ -1,4 +1,4 @@
-package tb;
+package tb.tick;
 
 public interface TickListener {
 

@@ -1,4 +1,4 @@
-package tb;
+package tb.tick;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -11,6 +11,7 @@ public class Tick {
     private static final int PRICE_OFFSET = 14;
     private static final int SIZE_OFFSET = 18;
     private static final int FLAGS_OFFSET = 22;
+    private static final int TICK_SIZE = 26;
 
     private final ByteBuffer buffer;
 
@@ -73,28 +74,33 @@ public class Tick {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
 
-        private final ByteBuffer buffer = ByteBuffer.allocate(26);
+        private final ByteBuffer buffer = ByteBuffer.allocate(TICK_SIZE);
+        private int bytesWritten = 0;
 
         public Builder timestamp(long timestamp) {
             buffer.putLong(TIMESTAMP_OFFSET, timestamp);
+            bytesWritten += 8;
             return this;
         }
 
         public Builder symbol(String symbol) {
             buffer.position(SYMBOL_OFFSET);
             buffer.put(symbol.intern().getBytes());
+            bytesWritten += 6;
             return this;
         }
 
         public Builder price(int price) {
             buffer.putInt(PRICE_OFFSET, price);
+            bytesWritten += 4;
             return this;
         }
 
         public Builder size(int size) {
             buffer.putInt(SIZE_OFFSET, size);
+            bytesWritten += 4;
             return this;
         }
 
@@ -105,10 +111,12 @@ public class Tick {
                 result |= mask;
             }
             buffer.putInt(FLAGS_OFFSET, result);
+            bytesWritten += 4;
             return this;
         }
 
         public Tick build() {
+            assert bytesWritten == TICK_SIZE : "Number of bytes does not match expected size of " + TICK_SIZE;
             return new Tick(buffer);
         }
     }

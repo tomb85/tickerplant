@@ -1,7 +1,7 @@
-package tb;
+package tb.feed;
 
 
-import tb.impl.CsvFeed;
+import tb.feed.impl.CsvFeed;
 
 import java.nio.file.Path;
 

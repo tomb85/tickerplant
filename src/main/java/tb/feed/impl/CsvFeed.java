@@ -1,6 +1,6 @@
-package tb.impl;
+package tb.feed.impl;
 
-import tb.Feed;
+import tb.feed.Feed;
 
 import java.io.IOException;
 import java.nio.file.Files;
