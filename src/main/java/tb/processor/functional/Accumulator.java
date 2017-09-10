@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class Accumulator {
 
-    public static Function<Tick, Integer> maxSize() {
+    public static Function<Tick, Integer> maxTradeSize() {
         return new Max<>(
                 Tick::getSize,
                 Integer::compare,
@@ -18,7 +18,7 @@ public class Accumulator {
         )::accumulate;
     }
 
-    public static Function<Tick, Integer> minSize() {
+    public static Function<Tick, Integer> minTradeSize() {
         return new Max<>(
                 Tick::getSize,
                 reversed(Integer::compare),
@@ -26,7 +26,7 @@ public class Accumulator {
         )::accumulate;
     }
 
-    public static Function<Tick, Double> avgSize() {
+    public static Function<Tick, Double> avgTradeSize() {
         return new Average<>(
                 Tick::getSize,
                 (first, second) -> first + second,
@@ -35,7 +35,7 @@ public class Accumulator {
         )::accumulate;
     }
 
-    public static Function<Tick, Double> avgPrice() {
+    public static Function<Tick, Double> avgTradePrice() {
         return new Average<>(
                 Tick::getPrice,
                 (first, second) -> first + second,
@@ -44,7 +44,7 @@ public class Accumulator {
         )::accumulate;
     }
 
-    public static Function<Tick, Integer> count() {
+    public static Function<Tick, Integer> tradeCount() {
         return new Count<>(
                 tick -> null
         )::accumulate;

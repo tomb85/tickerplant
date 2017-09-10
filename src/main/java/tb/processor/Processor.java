@@ -23,6 +23,10 @@ public class Processor<T> implements TickListener {
         this.accumulator = accumulator;
     }
 
+    public Processor(String symbol, Predicate<Tick> filter, Function<Tick, T> accumulator) {
+        this(symbol, Runnable::run, filter, accumulator);
+    }
+
     @Override
     public void onTick(Tick tick) {
         executor.execute(() -> {

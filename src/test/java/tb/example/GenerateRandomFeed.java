@@ -26,9 +26,8 @@ public class GenerateRandomFeed {
                     String.valueOf(System.currentTimeMillis()),
                     symbol(),
                     String.format("%.2f", random.nextDouble() * 1000),
-                    String.valueOf(random.nextInt(400)),
+                    String.valueOf(random.nextInt(399) + 1),
                     flags());
-
             Thread.sleep(1);
             lines.add(line);
         }

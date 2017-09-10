@@ -1,12 +1,10 @@
 package tb;
 
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import tb.feed.Feed;
 import tb.feed.FeedHandler;
 import tb.processor.Processor;
-import tb.processor.functional.Accumulator;
-import tb.processor.functional.Filter;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -14,69 +12,61 @@ import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static tb.processor.functional.Accumulator.*;
+import static tb.processor.functional.Filter.any;
+import static tb.processor.functional.Filter.flag;
 
 public class AcceptanceTest {
 
+    public static final double EPSILON = 0.0000_0000_0001;
+    private FeedHandler feedHandler;
+
+    @Before
+    public void setUp() throws URISyntaxException {
+        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
+        feedHandler = new FeedHandler(feed);
+    }
+
     @Test
     public void shouldCountTradesForInstrumentWithFlag() throws Exception {
-        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
-
-        Processor<Integer> processor = new Processor<>("VOD LN", Runnable::run, Filter.flag('A'), Accumulator.count());
-
+        Processor<Integer> processor = new Processor<>("CBA AB", flag('Q'), tradeCount());
         feedHandler.subscribe(processor);
-
         feedHandler.start();
-
-        Assert.assertThat(processor.getValue(), is(equalTo(2)));
+        assertThat(processor.getValue(), is(equalTo(16)));
     }
 
     @Test
-    public void testAvgTradeSize() throws Exception {
-        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
-
-        Processor<Double> processor = new Processor<>("AAA AC", Runnable::run, Filter.any(), Accumulator.avgSize());
-
+    public void shouldCalculateAverageTradeSizeForInstrument() throws Exception {
+        Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradeSize());
         feedHandler.subscribe(processor);
-
         feedHandler.start();
-
-        Assert.assertEquals(206.102564102564, processor.getValue(), 0.0000_0000_0001);
+        assertEquals(196.794871794871, processor.getValue(), EPSILON);
     }
 
     @Test
-    public void testAvgPrice() throws Exception {
-        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
-
-        Processor<Double> processor = new Processor<>("AAA AC", Runnable::run, Filter.any(), Accumulator.avgPrice());
-
+    public void shouldCalculateAverageTradePriceForInstrument() throws Exception {
+        Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradePrice());
         feedHandler.subscribe(processor);
-
         feedHandler.start();
-
-        Assert.assertThat(processor.getValue() / 100.0, is(equalTo(431.615)));
+        assertThat(processor.getValue() / 100.0, is(equalTo(431.615)));
     }
 
     @Test
-    public void testMaxSize() throws Exception {
-        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
-        Processor<Integer> processor = new Processor<>("VOD LN", Runnable::run, Filter.any(), Accumulator.maxSize());
+    public void shouldCalculateLargestTradeSizeForInstrument() throws Exception {
+        Processor<Integer> processor = new Processor<>("BBC AA", any(), maxTradeSize());
         feedHandler.subscribe(processor);
         feedHandler.start();
-        Assert.assertThat(processor.getValue(), is(equalTo(301)));
+        assertThat(processor.getValue(), is(equalTo(379)));
     }
 
     @Test
-    public void testMinSize() throws Exception {
-        Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        FeedHandler feedHandler = new FeedHandler(feed, Runnable::run);
-        Processor<Integer> processor = new Processor<>("VOD LN", Runnable::run, Filter.any(), Accumulator.minSize());
+    public void shouldCalculateSmallestTradeSizeForInstrument() throws Exception {
+        Processor<Integer> processor = new Processor<>("BBC AA", any(), minTradeSize());
         feedHandler.subscribe(processor);
         feedHandler.start();
-        Assert.assertThat(processor.getValue(), is(equalTo(100)));
+        assertThat(processor.getValue(), is(equalTo(2)));
     }
 
     private Path getResourcePath(String resource) throws URISyntaxException {

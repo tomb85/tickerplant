@@ -27,6 +27,10 @@ public class FeedHandler {
         this.executor = executor;
     }
 
+    public FeedHandler(Feed feed) {
+        this(feed, Runnable::run);
+    }
+
     public void subscribe(TickListener listener) {
         String symbol = listener.getSymbol();
         listeners.putIfAbsent(symbol, new CopyOnWriteArrayList<>());
