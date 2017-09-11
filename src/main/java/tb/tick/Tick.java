@@ -12,6 +12,11 @@ public class Tick {
     private static final int SIZE_OFFSET = 18;
     private static final int FLAGS_OFFSET = 22;
     private static final int TICK_SIZE = 26;
+    private static final int TIMESTAMP = 0;
+    private static final int SYMBOL = 1;
+    private static final int PRICE = 2;
+    private static final int SIZE = 3;
+    private static final int FLAGS = 4;
 
     private final ByteBuffer buffer;
 
@@ -68,6 +73,37 @@ public class Tick {
                 ", size=" + getSize() +
                 ", flags=" + Arrays.toString(getFlags()) +
                 '}';
+    }
+
+    public static Tick parse(String raw) {
+        String[] fields = raw.split(",");
+        return Tick.builder()
+                .timestamp(extractTimestamp(fields))
+                .symbol(extractSymbol(fields))
+                .price(extractPrice(fields))
+                .size(extractSize(fields))
+                .flags(extractFlags(fields))
+                .build();
+    }
+
+    private static char[] extractFlags(String[] fields) {
+        return fields[FLAGS].toCharArray();
+    }
+
+    private static int extractSize(String[] fields) {
+        return Integer.valueOf(fields[SIZE]);
+    }
+
+    private static int extractPrice(String[] fields) {
+        return (int) Math.round(Double.parseDouble(fields[PRICE]) * 100);
+    }
+
+    private static String extractSymbol(String[] fields) {
+        return fields[SYMBOL];
+    }
+
+    private static long extractTimestamp(String[] fields) {
+        return Long.parseLong(fields[TIMESTAMP]);
     }
 
     public static Builder builder() {

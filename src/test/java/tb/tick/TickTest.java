@@ -9,46 +9,41 @@ public class TickTest {
 
     private static Tick tick;
 
-    private static long timestamp = 1505079642840L;
-    private static String symbol = "XYZ LN";
-    private static int price = 12234;
-    private static int size = 200;
-    private static char[] flags = new char[] {'B', 'Q'};
+    private static final String RAW = "1505079642840,XYZ LN,122.2,200,BQ";
+    private static final long EXPECTED_TIMESTAMP = 1505079642840L;
+    private static final String EXPECTED_SYMBOL = "XYZ LN";
+    private static final int EXPECTED_PRICE = 12220;
+    private static final int EXPECTED_SIZE = 200;
+    private static final char[] EXPECTED_FLAGS = new char[] {'B', 'Q'};
 
     @Before
     public void setup() {
-        tick = Tick.builder()
-                .timestamp(timestamp)
-                .symbol(symbol)
-                .price(price)
-                .size(size)
-                .flags(flags)
-                .build();
+        tick = Tick.parse(RAW);
     }
 
     @Test
     public void getTimestamp() throws Exception {
-        assertEquals(timestamp, tick.getTimestamp());
+        assertEquals(EXPECTED_TIMESTAMP, tick.getTimestamp());
     }
 
     @Test
     public void getSymbol() throws Exception {
-        assertEquals(symbol, tick.getSymbol());
+        assertEquals(EXPECTED_SYMBOL, tick.getSymbol());
     }
 
     @Test
     public void getPrice() throws Exception {
-        assertEquals(price / 100.0, tick.getPrice(), 0.01);
+        assertEquals(EXPECTED_PRICE / 100.0, tick.getPrice(), 0.01);
     }
 
     @Test
     public void getSize() throws Exception {
-        assertEquals(size, tick.getSize());
+        assertEquals(EXPECTED_SIZE, tick.getSize());
     }
 
     @Test
     public void getFlags() throws Exception {
-        assertArrayEquals(flags, tick.getFlags());
+        assertArrayEquals(EXPECTED_FLAGS, tick.getFlags());
     }
 
     @Test
