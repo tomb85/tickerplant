@@ -77,6 +77,28 @@ public class AcceptanceTest {
         assertThat(processor.getValue(), is(equalTo(2)));
     }
 
+    @Test
+    public void shouldHandleMultipleSubscribersForTheSameInstrument() throws Exception {
+        Processor<Integer> first = new Processor<>("BBC AA", any(), minTradeSize());
+        Processor<Integer> second = new Processor<>("BBC AA", any(), minTradeSize());
+        feedHandler.subscribe(first);
+        feedHandler.subscribe(second);
+        feedHandler.start();
+        assertThat(first.getValue(), is(equalTo(2)));
+        assertThat(second.getValue(), is(equalTo(2)));
+    }
+
+    @Test
+    public void shouldHandleMultipleSubscribersForDifferentInstrument() throws Exception {
+        Processor<Integer> first = new Processor<>("BBC AA", any(), minTradeSize());
+        Processor<Integer> second = new Processor<>("AAA AC", any(), tradeCount());
+        feedHandler.subscribe(first);
+        feedHandler.subscribe(second);
+        feedHandler.start();
+        assertThat(first.getValue(), is(equalTo(2)));
+        assertThat(second.getValue(), is(equalTo(39)));
+    }
+
     private Path getResourcePath(String resource) throws URISyntaxException {
         return Paths.get(ClassLoader.getSystemResource(resource).toURI());
     }
