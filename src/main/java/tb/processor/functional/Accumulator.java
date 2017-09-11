@@ -3,6 +3,7 @@ package tb.processor.functional;
 import tb.processor.operation.Average;
 import tb.processor.operation.Count;
 import tb.processor.operation.Max;
+import tb.processor.operation.Sum;
 import tb.tick.Tick;
 
 import java.util.Comparator;
@@ -45,9 +46,11 @@ public class Accumulator {
     }
 
     public static Function<Tick, Integer> tradeCount() {
-        return new Count<>(
-                tick -> null
-        )::accumulate;
+        return new Count<>(tick -> null)::accumulate;
+    }
+
+    public static Function<Tick, Long> tradeSizeTotal() {
+        return new Sum(Tick::getSize)::accumulate;
     }
 
     private static <T> Comparator<T> reversed(Comparator<T> comparator) {

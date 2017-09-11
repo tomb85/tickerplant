@@ -78,6 +78,14 @@ public class AcceptanceTest {
     }
 
     @Test
+    public void shouldCalculateTradeSizeTotalForInstrument() throws Exception {
+        Processor<Long> processor = new Processor<>("AAA AC", any(), tradeSizeTotal());
+        feedHandler.subscribe(processor);
+        feedHandler.start();
+        assertThat(processor.getValue(), is(equalTo(7675L)));
+    }
+
+    @Test
     public void shouldHandleMultipleSubscribersForTheSameInstrument() throws Exception {
         Processor<Integer> first = new Processor<>("BBC AA", any(), minTradeSize());
         Processor<Integer> second = new Processor<>("BBC AA", any(), minTradeSize());
