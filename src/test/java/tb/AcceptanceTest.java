@@ -38,6 +38,14 @@ public class AcceptanceTest {
     }
 
     @Test
+    public void shouldCountTradesForInstrument() throws Exception {
+        Processor<Integer> processor = new Processor<>("AAA AC", any(), tradeCount());
+        feedHandler.subscribe(processor);
+        feedHandler.start();
+        assertThat(processor.getValue(), is(equalTo(39)));
+    }
+
+    @Test
     public void shouldCalculateAverageTradeSizeForInstrument() throws Exception {
         Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradeSize());
         feedHandler.subscribe(processor);
@@ -50,7 +58,7 @@ public class AcceptanceTest {
         Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradePrice());
         feedHandler.subscribe(processor);
         feedHandler.start();
-        assertThat(processor.getValue() / 100.0, is(equalTo(431.615)));
+        assertEquals(561.00717948718, processor.getValue(), EPSILON);
     }
 
     @Test

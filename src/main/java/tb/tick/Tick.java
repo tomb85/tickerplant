@@ -30,8 +30,8 @@ public class Tick {
         return new String(bytes).intern();
     }
 
-    public int getPrice() {
-        return buffer.getInt(PRICE_OFFSET);
+    public double getPrice() {
+        return buffer.getInt(PRICE_OFFSET) / 100.0;
     }
 
     public int getSize() {

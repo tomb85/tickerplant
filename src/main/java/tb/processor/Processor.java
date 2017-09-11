@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Processor<T> implements TickListener {
+public class Processor<T extends Number> implements TickListener {
 
     private final String symbol;
     private final Executor executor;
@@ -32,6 +32,7 @@ public class Processor<T> implements TickListener {
         executor.execute(() -> {
             if (filter.test(tick)) {
                 value = accumulator.apply(tick);
+                // if value changed -> notify
             }
         });
     }

@@ -40,7 +40,7 @@ public class Accumulator {
                 Tick::getPrice,
                 (first, second) -> first + second,
                 (total, count) -> total / (double) count,
-                () -> 0
+                () -> 0.0
         )::accumulate;
     }
 

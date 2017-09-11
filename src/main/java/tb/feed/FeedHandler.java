@@ -70,7 +70,7 @@ public class FeedHandler {
     }
 
     private int extractPrice(String[] fields) {
-        return (int) (Double.parseDouble(fields[PRICE]) * 100);
+        return (int) Math.round(Double.parseDouble(fields[PRICE]) * 100);
     }
 
     private String extractSymbol(String[] fields) {
