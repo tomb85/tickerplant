@@ -8,27 +8,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 public class FeedHandler {
 
     private final Feed feed;
     private final Executor executor;
+    private final Consumer<Tick> tickerPlant;
 
-    private final Map<String, List<TickListener>> listeners = new ConcurrentHashMap<>();
-
-    public FeedHandler(Feed feed, Executor executor) {
+    public FeedHandler(Feed feed, Executor executor, Consumer<Tick> tickerPlant) {
         this.feed = feed;
         this.executor = executor;
+        this.tickerPlant = tickerPlant;
     }
 
-    public FeedHandler(Feed feed) {
-        this(feed, Runnable::run);
-    }
-
-    public void subscribe(TickListener listener) {
-        String symbol = listener.getSymbol();
-        listeners.putIfAbsent(symbol, new CopyOnWriteArrayList<>());
-        listeners.get(symbol).add(listener);
+    public FeedHandler(Feed feed, Consumer<Tick> tickerPlant) {
+        this(feed, Runnable::run, tickerPlant);
     }
 
     public void start() {
@@ -36,10 +31,8 @@ public class FeedHandler {
             while (feed.hasNext()) {
                 String raw = feed.next();
                 Tick tick = Tick.parse(raw);
-                String symbol = tick.getSymbol();
-                if (listeners.containsKey(symbol)) {
-                    listeners.get(symbol).forEach(tickListener -> tickListener.onTick(tick));
-                }
+                // validate tick
+                tickerPlant.accept(tick);
             }
         });
     }
