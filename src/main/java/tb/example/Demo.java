@@ -16,7 +16,7 @@ public class Demo {
 
         // Create random feed and feed handler
         Feed feed = Feed.defaultRandom();
-        TickerPlant tickerPlant = new TickerPlant();
+        TickerPlant tickerPlant = new TickerPlant(executor("ticker-plant-thread"));
         FeedHandler feedHandler = new FeedHandler(feed, executor("feed-handler-thread"), tickerPlant::onTick);
         feedHandler.start();
 

@@ -6,31 +6,43 @@ import java.util.Arrays;
 
 public class Tick {
 
+    // Byte buffer offsets
     private static final int TIMESTAMP_OFFSET = 0;
     private static final int SYMBOL_OFFSET = 8;
     private static final int PRICE_OFFSET = 14;
     private static final int SIZE_OFFSET = 18;
     private static final int FLAGS_OFFSET = 22;
-    private static final int TICK_SIZE = 26;
+
+    // Parsing field offsets
     private static final int TIMESTAMP = 0;
     private static final int SYMBOL = 1;
     private static final int PRICE = 2;
     private static final int SIZE = 3;
     private static final int FLAGS = 4;
+
+    // Misc
     private static final int LONG_SIZE = 8;
     private static final int SYMBOL_SIZE = 6;
     private static final int INTEGER_SIZE = 4;
     private static final int FLAGS_SIZE = 26;
     private static final int ASCII_A = 65;
 
-    private final ByteBuffer buffer;
+    private static final int TICK_SIZE = LONG_SIZE + SYMBOL_SIZE + 3 * INTEGER_SIZE;
 
-    private Tick(ByteBuffer buffer) {
+    private final ByteBuffer buffer;
+    private final int bytesWritten;
+
+    private Tick(ByteBuffer buffer, int bytesWritten) {
         this.buffer = buffer;
+        this.bytesWritten = bytesWritten;
     }
 
     public long getTimestamp() {
         return buffer.getLong(TIMESTAMP_OFFSET);
+    }
+
+    public boolean isValid() {
+        return bytesWritten == TICK_SIZE;
     }
 
     public String getSymbol() {
@@ -157,8 +169,7 @@ public class Tick {
         }
 
         public Tick build() {
-            assert bytesWritten == TICK_SIZE : "Number of bytes does not match expected size of " + TICK_SIZE;
-            return new Tick(buffer);
+            return new Tick(buffer, bytesWritten);
         }
     }
 }
