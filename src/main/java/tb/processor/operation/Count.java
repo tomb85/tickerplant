@@ -4,7 +4,7 @@ import tb.tick.Tick;
 
 import java.util.function.Function;
 
-public class Count<T> extends Operation<T, Integer>{
+public class Count<T> extends Operation<T, Integer> {
 
     private int count;
 

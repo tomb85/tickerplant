@@ -29,8 +29,8 @@ public class AcceptanceTest {
     @Before
     public void setUp() throws URISyntaxException {
         Feed feed = Feed.fromFile(getResourcePath("trades.csv"));
-        tickerPlant = new TickerPlant();
-        feedHandler = new FeedHandler(feed, tickerPlant::onTick);
+        tickerPlant = TickerPlant.create();
+        feedHandler = FeedHandler.create(feed, tickerPlant::onTick);
     }
 
     private void sendTrades() {
@@ -39,7 +39,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCountTradesForInstrumentWithFlag() throws Exception {
-        Processor<Integer> processor = new Processor<>("CBA AB", flag('Q'), tradeCount());
+        Processor<Integer> processor = Processor.create("CBA AB", flag('Q'), tradeCount());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertThat(processor.getValue(), is(equalTo(16)));
@@ -47,7 +47,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCountTradesForInstrument() throws Exception {
-        Processor<Integer> processor = new Processor<>("AAA AC", any(), tradeCount());
+        Processor<Integer> processor = Processor.create("AAA AC", any(), tradeCount());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertThat(processor.getValue(), is(equalTo(39)));
@@ -55,7 +55,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCalculateAverageTradeSizeForInstrument() throws Exception {
-        Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradeSize());
+        Processor<Double> processor = Processor.create("AAA AC", any(), avgTradeSize());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertEquals(196.794871794871, processor.getValue(), EPSILON);
@@ -63,7 +63,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCalculateAverageTradePriceForInstrument() throws Exception {
-        Processor<Double> processor = new Processor<>("AAA AC", any(), avgTradePrice());
+        Processor<Double> processor = Processor.create("AAA AC", any(), avgTradePrice());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertEquals(561.00717948718, processor.getValue(), EPSILON);
@@ -71,7 +71,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCalculateLargestTradeSizeForInstrument() throws Exception {
-        Processor<Integer> processor = new Processor<>("BBC AA", any(), maxTradeSize());
+        Processor<Integer> processor = Processor.create("BBC AA", any(), maxTradeSize());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertThat(processor.getValue(), is(equalTo(379)));
@@ -79,7 +79,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCalculateSmallestTradeSizeForInstrument() throws Exception {
-        Processor<Integer> processor = new Processor<>("BBC AA", any(), minTradeSize());
+        Processor<Integer> processor = Processor.create("BBC AA", any(), minTradeSize());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertThat(processor.getValue(), is(equalTo(2)));
@@ -87,7 +87,7 @@ public class AcceptanceTest {
 
     @Test
     public void shouldCalculateTradeSizeTotalForInstrument() throws Exception {
-        Processor<Long> processor = new Processor<>("AAA AC", any(), tradeSizeTotal());
+        Processor<Long> processor = Processor.create("AAA AC", any(), tradeSizeTotal());
         tickerPlant.subscribe(processor);
         sendTrades();
         assertThat(processor.getValue(), is(equalTo(7675L)));
@@ -95,8 +95,8 @@ public class AcceptanceTest {
 
     @Test
     public void shouldHandleMultipleSubscribersForTheSameInstrument() throws Exception {
-        Processor<Integer> first = new Processor<>("BBC AA", any(), minTradeSize());
-        Processor<Integer> second = new Processor<>("BBC AA", any(), minTradeSize());
+        Processor<Integer> first = Processor.create("BBC AA", any(), minTradeSize());
+        Processor<Integer> second = Processor.create("BBC AA", any(), minTradeSize());
         tickerPlant.subscribe(first);
         tickerPlant.subscribe(second);
         sendTrades();
@@ -106,8 +106,8 @@ public class AcceptanceTest {
 
     @Test
     public void shouldHandleMultipleSubscribersForDifferentInstrument() throws Exception {
-        Processor<Integer> first = new Processor<>("BBC AA", any(), minTradeSize());
-        Processor<Integer> second = new Processor<>("AAA AC", any(), tradeCount());
+        Processor<Integer> first = Processor.create("BBC AA", any(), minTradeSize());
+        Processor<Integer> second = Processor.create("AAA AC", any(), tradeCount());
         tickerPlant.subscribe(first);
         tickerPlant.subscribe(second);
         sendTrades();

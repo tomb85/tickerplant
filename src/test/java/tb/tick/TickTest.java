@@ -14,7 +14,7 @@ public class TickTest {
     private static final String EXPECTED_SYMBOL = "XYZ LN";
     private static final int EXPECTED_PRICE = 12220;
     private static final int EXPECTED_SIZE = 200;
-    private static final char[] EXPECTED_FLAGS = new char[] {'B', 'Q'};
+    private static final char[] EXPECTED_FLAGS = new char[]{'B', 'Q'};
 
     @Before
     public void setup() {

@@ -3,9 +3,10 @@ package tb.processor;
 import tb.tick.Tick;
 import tb.tick.TickListener;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,23 +18,27 @@ public class Processor<T extends Number> implements TickListener {
     private final Predicate<Tick> filter;
     private final Function<Tick, T> accumulator;
 
-    private final List<BiConsumer<String, T>> listeners = new CopyOnWriteArrayList<>();
+    private final List<BiConsumer<String, T>> listeners = new ArrayList<>();
 
     private volatile T value;
 
-    public Processor(String symbol, Executor executor, Predicate<Tick> filter, Function<Tick, T> accumulator) {
+    public static <T> Processor createAsync(String symbol, Predicate<Tick> filter, Function<Tick, T> accumulator) {
+        return new Processor(symbol, Executors.newSingleThreadExecutor(), filter, accumulator);
+    }
+
+    public static <T> Processor create(String symbol, Predicate<Tick> filter, Function<Tick, T> accumulator) {
+        return new Processor(symbol, Runnable::run, filter, accumulator);
+    }
+
+    private Processor(String symbol, Executor executor, Predicate<Tick> filter, Function<Tick, T> accumulator) {
         this.symbol = symbol;
         this.executor = executor;
         this.filter = filter;
         this.accumulator = accumulator;
     }
 
-    public Processor(String symbol, Predicate<Tick> filter, Function<Tick, T> accumulator) {
-        this(symbol, Runnable::run, filter, accumulator);
-    }
-
     public void subscribe(BiConsumer<String, T> listener) {
-        listeners.add(listener);
+        executor.execute(() -> listeners.add(listener));
     }
 
     @Override

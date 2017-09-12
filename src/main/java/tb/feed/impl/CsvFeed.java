@@ -9,13 +9,11 @@ import java.util.List;
 
 public class CsvFeed implements Feed {
 
-    private final Path path;
     private List<String> data;
 
     private int pos = 0;
 
     public CsvFeed(Path path) {
-        this.path = path;
         data = getData(path);
     }
 

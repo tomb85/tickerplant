@@ -15,7 +15,7 @@ public class TickerPlantTest {
 
     @Before
     public void setup() {
-        tickerPlant = new TickerPlant();
+        tickerPlant = TickerPlant.create();
         tickerPlant.onTick(Tick.parse("1505079642830,AAC CB,998.92,327,ABCDEFGHIJKLNOQRSTUVWXYZ"));
         tickerPlant.onTick(Tick.parse("1505079642831,AAC AC,904.50,76,GORY"));
         tickerPlant.onTick(Tick.parse("1505079642833,AAC BC,424.52,107,ABCDEFHJKLMNQRSTUVWXYZ"));

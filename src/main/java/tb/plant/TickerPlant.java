@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class TickerPlant {
 
@@ -16,12 +17,16 @@ public class TickerPlant {
     private Map<String, List<Tick>> ticks = new HashMap<>();
     private Map<String, List<TickListener>> listeners = new HashMap<>();
 
-    public TickerPlant(Executor executor) {
-        this.executor = executor;
+    public static TickerPlant createAsync() {
+        return new TickerPlant(Executors.newSingleThreadExecutor(r -> new Thread(r, "ticker-plant")));
     }
 
-    public TickerPlant() {
-        this(Runnable::run);
+    public static TickerPlant create() {
+        return new TickerPlant(Runnable::run);
+    }
+
+    private TickerPlant(Executor executor) {
+        this.executor = executor;
     }
 
     public void onTick(Tick tick) {
